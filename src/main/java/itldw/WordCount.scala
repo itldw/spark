@@ -6,14 +6,15 @@ object WordCount {
 
   def main(args: Array[String]): Unit = {
 
-    val wordFile = "file:///usr/local/spark234/REDEME.MD"
-    val conf = new SparkConf().setAppName("wordcount");
-    val sc = new SparkContext(conf)
-    val input = sc.textFile(wordFile, 2).cache()
-    val lines = input.flatMap(line=>line.split(" "))
-    val count = lines.map(word => (word,1)).reduceByKey{case (x,y)=>x+y}
-    val output = count.saveAsTextFile("/home/hadoop/hellospark")
 
+    val conf=new SparkConf().setAppName("wc")
+    val sc=new SparkContext(conf)
+    val inputFile="/usr/input.txt"
+    var txtData=sc.textFile(inputFile)
 
+    var counts=txtData.flatMap(_.split(" "))
+      .filter(_.nonEmpty).map((_,1)).reduceByKey(_+_).collect().foreach(println)
+
+    sc.stop
   }
 }
